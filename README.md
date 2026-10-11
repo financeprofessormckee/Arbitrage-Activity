@@ -40,3 +40,26 @@ of derivative works. If you use or adapt this activity, please cite this reposit
 ---
 *Economic concepts: [David Friedman](http://daviddfriedman.com/Living_Paper/living_paper.htm). Development: [Eric McKee](https://github.com/financeprofessormckee),
 Paul and Virginia Engler College of Business, West Texas A&M University.*
+
+## Proposed trading-lab alternative
+
+This branch keeps the original economic model and adds a compact trading workspace,
+a directed quote matrix, a scan-friendly return panel, same-route scenario comparisons,
+an optional explorer for all 64 routes, and CSV export of executed trades. The four
+self-checks now require their stated 100-grain amount and can be previewed beside the
+question. See [REVIEW.md](REVIEW.md) for detailed findings, scope, and verification limits.
+
+The site still opens directly from `index.html`, with no install or build step.
+Development checks:
+
+```sh
+node tests/model-tests.cjs
+npm install --no-save jsdom@30.1.2 playwright
+node tests/dom-tests.cjs
+npx playwright install chromium
+node tests/browser-tests.cjs
+```
+
+The browser suite defaults to a local file. Set `TEST_URL` for an HTTP-served copy,
+`ARTIFACT_DIR` for screenshots, or `CHROMIUM_EXECUTABLE` for an existing Chromium.
+DOM checks are not a substitute for browser reflow and assistive-technology testing.

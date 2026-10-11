@@ -98,7 +98,8 @@
     var returned = amount * product;
     return { ok: true, scenario: s.scenario, route: route.slice(), path: path, amount: amount,
       multiplier: product, classification: classification(product), legs: legs, returned: returned,
-      profit: returned - amount, before: s.balance, after: s.balance - amount + returned };
+      profit: returned - amount, before: s.balance, after: s.balance - amount + returned,
+      historyLength: s.history.length };
   }
   function execute(s, route, amount) {
     var p = preview(s, route, amount);
@@ -129,6 +130,14 @@
     })[0];
     return { route: best.route.slice(), multiplier: best.multiplier, profitable: highest > 1 + EPS, count: list.length };
   }
+  function historyCSV(s) {
+    var error = stateError(s); if (error) throw new RangeError(error);
+    var lines = [['Scenario', 'Loop', 'Route', 'Exchanged grain', 'Multiplier', 'Returned grain', 'Profit or loss grain', 'Balance before', 'Balance after']];
+    s.history.forEach(function (record) {
+      lines.push([s.scenario, record.number, [0].concat(record.route, [0]).map(function (g) { return GOODS[g]; }).join(' -> '), record.amount, record.multiplier, record.returned, record.profit, record.before, record.after]);
+    });
+    return lines.map(function (line) { return line.map(function (value) { return '"' + String(value).replace(/"/g, '""') + '"'; }).join(','); }).join('\r\n') + '\r\n';
+  }
   function prompt(id) {
     var p = PROMPTS.find(function (x) { return x.id === id; });
     if (!p) throw new RangeError('Choose a known self-check.');
@@ -136,16 +145,18 @@
   }
   function checkPrompt(id, s, p, answer) {
     var task = prompt(id);
-    if (!p || !p.ok || p.scenario !== s.scenario || p.before !== s.balance ||
+    if (!p || !p.ok || p.scenario !== s.scenario || p.before !== s.balance || p.historyLength !== s.history.length ||
       s.scenario !== task.scenario || JSON.stringify(p.route) !== JSON.stringify(task.route)) return { complete: false, message: 'Preview the self-check’s loaded route in its scenario before checking your answer.' };
+    if (p.amount !== 100) return { complete: false, message: 'This self-check uses exactly 100 grain. Reload the self-check, then preview its loop before answering.' };
     var actual = preview(s, p.route, p.amount);
     if (!actual.ok || Math.abs(actual.multiplier - task.multiplier) > EPS) return { complete: false, message: 'Preview the self-check’s loaded route before checking your answer.' };
+    if (!answer) return { complete: false, message: 'Choose an answer before checking it.' };
     if (answer !== task.answer) return { complete: false, message: 'Not yet. Compare the rate product with one, then try your answer again.' };
     return { complete: true, message: 'Self-check complete. ' + task.explanation };
   }
   return { goods: GOODS.slice(), scenarios: SCENARIOS.map(function (s) { return Object.assign({}, s); }),
     maxBalance: MAX, tolerance: EPS, scenario: scenario, quotes: quotes, start: start,
     routeError: routeError, amountError: amountError, validate: validate, classification: classification,
-    preview: preview, execute: execute, enumerate: enumerate, bestLoop: bestLoop,
+    preview: preview, execute: execute, enumerate: enumerate, bestLoop: bestLoop, historyCSV: historyCSV,
     prompts: PROMPTS.map(function (p) { return { id: p.id, title: p.title }; }), prompt: prompt, checkPrompt: checkPrompt };
 });

@@ -3,114 +3,80 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Explore fixed exchange rates, preview five-good loops, and discover arbitrage opportunities.">
-  <title>Arbitrage — Friedman Economic Games</title>
+  <meta name="description" content="Find arbitrage in a five-good market. Build a locked-quote loop, test its return, and compare consistent prices.">
+  <title>Arbitrage Lab — Friedman Economic Games</title>
   <link rel="icon" href="assets/cob-seal.png">
   <link rel="stylesheet" href="assets/cob-brand.css">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="cob-brand">
-    <div class="cob-brand__inner">
-      <img class="cob-brand__seal" src="assets/cob-seal.png" srcset="assets/cob-seal@2x.png 2x" width="56" height="56" alt="West Texas A&amp;M University · Paul and Virginia Engler College of Business seal">
-      <div class="cob-brand__wordmark">
-        <span class="cob-brand__university">West Texas A&amp;M University</span>
-        <span class="cob-brand__college">Paul and Virginia Engler College of Business</span>
-      </div>
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="cob-brand">
+  <div class="cob-brand__inner">
+    <img class="cob-brand__seal" src="assets/cob-seal.png" srcset="assets/cob-seal@2x.png 2x" width="56" height="56" alt="West Texas A&amp;M University · Paul and Virginia Engler College of Business seal">
+    <div class="cob-brand__wordmark"><span class="cob-brand__university">West Texas A&amp;M University</span><span class="cob-brand__college">Paul and Virginia Engler College of Business</span></div>
+  </div><div class="cob-brand__rule" aria-hidden="true"></div>
+</header>
+<main id="main" tabindex="-1">
+  <header class="hero">
+    <div><p class="eyebrow">Friedman Economic Games · Proposal 15</p><h1>Arbitrage<span class="h1-label">The five-good trading lab</span></h1>
+      <p class="intro">Start with grain. Trade through other goods. Can you come back with more?</p>
+      <nav class="activity-nav" aria-label="Activity sections"><a href="#route-heading">Build a loop</a><a href="#prompts-heading">Guided self-checks</a><a href="#limits-heading">About the model</a></nav>
     </div>
-    <div class="cob-brand__rule" aria-hidden="true"></div>
+    <div class="principle"><p class="eyebrow">The test for arbitrage</p><p class="principle-equation">Multiply the quotes.</p><p>Above 1: a gain. Below 1: a loss.<br>At 1: you break even.</p><span class="pill">Fixed quotes · no fees · no price impact</span></div>
   </header>
-  <main id="main" tabindex="-1">
-    <p class="eyebrow">Friedman Economic Games · Proposal 15</p>
-    <h1>Arbitrage</h1>
-    <p class="intro">Can you return with more grain than you started with? Choose an exchange loop and multiply its quotes to find out.</p>
-    <ul class="resources">
-      <li><a href="README.md">Project overview</a></li>
-      <li><a href="SPECIFICATION.md">Browser specification</a></li>
-      <li><a href="DESIGN.md">Design brief</a></li>
-      <li><a href="http://daviddfriedman.com/Living_Paper/Program_Descriptions/program_descriptions.htm">Original program descriptions</a></li>
-    </ul>
-    <section class="notice" aria-labelledby="status-heading">
-      <h2 id="status-heading">Interactive v1 · for David’s review</h2>
-      <p>Start with 100 grain. All quotes stay fixed while you exchange through other goods and back to grain in one action. Intermediate goods can be retraded immediately. Your trades do not change quotes.</p>
-      <p>This prototype uses unlimited liquidity and no fees. Profitable loops can be repeated at these idealized quotes. The corrected-rate scenario separately shows how consistent prices remove the opportunity. Code is MIT-licensed; the accessibility release audit remains pending.</p>
-    </section>
-    <noscript><p class="notice">Enable JavaScript to use this activity. The specification above explains the model.</p></noscript>
-    <p id="status" class="status" role="status" aria-live="polite" aria-atomic="true">Choose a route, then preview it before executing.</p>
-    <section class="card" aria-labelledby="market-heading">
-      <h2 id="market-heading">1. Inspect the market</h2>
-      <div class="controls">
-        <div><label for="scenario">Scenario · changing it restarts holdings and history</label>
-          <select id="scenario"><option value="opportunity">Arbitrage opportunity</option><option value="consistent">Consistent rates</option><option value="corrected">Corrected rates</option></select></div>
-        <button id="restart" type="button">Restart this scenario</button>
-      </div>
-      <p id="scenario-explanation"></p>
-      <p id="quote-note">Each column tells you what you receive for <strong>one unit</strong> surrendered. Displayed quotes are rounded; calculations use full precision. Reverse quotes are reciprocals.</p>
-      <div class="table-scroll" role="region" aria-label="Ten exchange-rate pairs; scroll horizontally for both directions" tabindex="0">
-        <table id="quotes-table" aria-describedby="quote-note"><caption>Current quotes · ten pairs, both directions</caption><thead><tr><th scope="col">Pair</th><th scope="col">First → second</th><th scope="col">Second → first</th></tr></thead><tbody></tbody></table>
-      </div>
-    </section>
-    <section class="balance-grid" aria-label="Current results">
-      <div class="metric"><h2>Grain holdings</h2><p id="balance">100</p></div>
-      <div class="metric"><h2>Cumulative profit / loss</h2><p id="profit">0 grain</p></div>
-      <div class="metric"><h2>Final / initial holdings</h2><p id="ratio">1×</p></div>
-    </section>
-    <section class="card" aria-labelledby="route-heading">
-      <h2 id="route-heading">2. Plan a loop</h2>
-      <p id="route-help">Begin and end in grain. Choose one to four distinct intermediate goods; each quote is locked for the whole loop. A product above one gains grain; below one loses grain.</p>
+  <noscript><p class="notice">Enable JavaScript to use the lab. The <a href="SPECIFICATION.md">specification</a> explains the model.</p></noscript>
+  <section class="balance-grid" aria-label="Current results">
+    <div class="metric"><h2>Grain holdings</h2><p id="balance">100 grain</p></div>
+    <div class="metric"><h2>Cumulative profit / loss</h2><p id="profit">0 grain</p></div>
+    <div class="metric"><h2>Final / initial holdings</h2><p id="ratio">1×</p></div>
+  </section>
+  <p id="status" class="status" role="status" aria-live="polite" aria-atomic="true">Choose a route, then preview it before executing.</p>
+  <div class="workbench">
+    <section class="card trade-card" aria-labelledby="route-heading">
+      <p class="eyebrow">01 · Experiment</p><h2 id="route-heading" tabindex="-1">Build a closed loop</h2>
+      <p id="route-help">Start and finish in grain. Choose one to four distinct stops. Every quote is locked for the whole loop.</p>
       <form id="trade-form" novalidate>
         <fieldset aria-describedby="route-help route-error"><legend>Intermediate goods, in exchange order</legend>
           <div id="route-selectors" class="route-selectors"></div>
-          <div class="actions"><button id="add-stop" type="button">Add a stop</button><button id="remove-stop" type="button">Remove last stop</button></div>
+          <div class="actions route-actions"><button id="add-stop" type="button">Add a stop</button><button id="remove-stop" type="button">Remove last stop</button><button id="reverse-route" type="button">Reverse route</button></div>
           <p id="route-error" class="error" hidden></p>
         </fieldset>
-        <div class="controls amount-controls"><div><label for="amount">Grain to exchange</label>
-          <input id="amount" type="number" min="0" step="any" value="100" aria-describedby="amount-help amount-error">
-          <p id="amount-help" class="help">Any positive amount up to your current holdings. Unused grain stays with you.</p>
-          <p id="amount-error" class="error" hidden></p></div>
-          <button id="all-holdings" type="button">Use all holdings</button>
-        </div>
-        <div class="actions"><button class="primary" id="preview" type="submit">Preview loop</button><button id="execute" type="button" disabled>Execute previewed loop</button><button id="reveal" type="button">Reveal best loop</button></div>
+        <div id="route-diagram" aria-labelledby="diagram-heading"><h3 id="diagram-heading">Your route at current quotes</h3><ol id="route-path" class="route-path"></ol></div>
+        <div class="controls amount-controls"><div><label for="amount">Grain to exchange</label><input id="amount" type="number" min="0" step="any" value="100" aria-describedby="amount-help amount-error"><p id="amount-help" class="help">Any positive amount up to your holdings. Unused grain stays with you.</p><p id="amount-error" class="error" hidden></p></div><button id="all-holdings" type="button">Use all holdings</button></div>
+        <div class="actions"><button class="primary" id="preview" type="submit">Preview loop</button><button id="execute" type="button" disabled>Execute previewed loop</button></div>
       </form>
-      <div id="route-diagram" aria-labelledby="diagram-heading"><h3 id="diagram-heading">Your route</h3><ol id="route-path" class="route-path"></ol></div>
-      <section id="preview-panel" aria-labelledby="preview-heading"><h3 id="preview-heading">Loop preview</h3>
+      <section id="preview-panel" class="preview-panel" aria-labelledby="preview-heading"><h3 id="preview-heading">What would this loop return?</h3>
+        <div id="result-metrics" class="result-metrics" hidden><div><span>Returned grain</span><strong id="result-return"></strong></div><div><span>Loop return</span><strong id="result-percent"></strong></div><div><span>Multiplier</span><strong id="result-multiplier"></strong></div></div>
         <p id="preview-summary">Preview your route to see each conversion. Nothing has been exchanged yet.</p>
-        <p id="precision-note" class="help" hidden>Displayed values are rounded to six fractional digits (very small values use scientific notation). “Neutral” uses a multiplier tolerance of 0.000000001; tiny floating-point differences are not evidence of arbitrage.</p>
-        <div id="preview-scroll" class="table-scroll" role="region" aria-label="Preview conversion details; scroll horizontally" tabindex="0" hidden>
-          <table id="preview-table"><caption>Preview · every conversion at locked quotes</caption><thead><tr><th scope="col">Leg</th><th scope="col">Surrender</th><th scope="col">Quote received per unit</th><th scope="col">Receive</th></tr></thead><tbody></tbody></table>
-        </div>
+        <p id="rate-equation" class="rate-equation" hidden></p>
+        <p id="precision-note" class="help" hidden>Values are rounded to six fractional digits; very small values use scientific notation. “Neutral” allows a multiplier tolerance of 0.000000001. Tiny floating-point differences are not evidence of arbitrage.</p>
+        <div id="preview-scroll" class="table-scroll" role="region" aria-label="Preview conversion details; scroll horizontally" tabindex="0" hidden><table id="preview-table"><caption>Every conversion at locked quotes</caption><thead><tr><th scope="col">Leg</th><th scope="col">Surrender</th><th scope="col">Quote received per unit</th><th scope="col">Receive</th></tr></thead><tbody></tbody></table></div>
+        <button id="compare-scenarios" type="button" disabled>Compare this route across scenarios</button>
       </section>
-      <section id="reveal-panel" class="reveal" aria-labelledby="reveal-heading" hidden><h3 id="reveal-heading">Best-loop explanation</h3><p id="reveal-summary"></p><ol id="reveal-legs"></ol></section>
+      <section id="comparison-panel" aria-labelledby="comparison-heading" hidden><h3 id="comparison-heading">Same amount. Different quotes.</h3><p id="comparison-note"></p><div class="table-scroll" tabindex="0" role="region" aria-label="Scenario comparison; scroll horizontally"><table id="comparison-table"><caption>Hypothetical comparisons · no trades or resets</caption><thead><tr><th scope="col">Market / direction</th><th scope="col">Multiplier</th><th scope="col">Returned grain</th><th scope="col">Profit / loss</th></tr></thead><tbody></tbody></table></div><p class="help">Corrected rates are imposed by the scenario. Your orders do not cause the correction.</p></section>
     </section>
-    <section class="card" aria-labelledby="history-heading">
-      <h2 id="history-heading">3. Compare executed loops</h2>
-      <p id="history-summary">No loops executed. Quotes stay fixed after every trade.</p>
-      <div id="history-scroll" class="table-scroll" role="region" aria-label="Executed-loop history; scroll horizontally" tabindex="0" hidden>
-        <table id="history-table"><caption>Executed loops · amounts measured in grain</caption><thead><tr><th scope="col">Loop</th><th scope="col">Route</th><th scope="col">Exchanged</th><th scope="col">Multiplier</th><th scope="col">Returned</th><th scope="col">Profit / loss</th><th scope="col">Balance after</th></tr></thead><tbody></tbody></table>
-      </div>
-    </section>
-    <section class="card" aria-labelledby="prompts-heading">
-      <h2 id="prompts-heading">Optional self-checks</h2>
-      <p>Each self-check loads a scenario and route and restarts your holdings. Preview the loop, choose an answer, then check it. Execution is optional.</p>
-      <div id="prompt-buttons" class="actions"></div>
-      <div id="prompt-panel" hidden><h3 id="prompt-title"></h3>
-        <fieldset><legend id="prompt-question"></legend><div id="prompt-options"></div></fieldset>
-        <button id="check-prompt" type="button">Check answer</button><p id="prompt-result"></p>
-      </div>
-    </section>
-    <section aria-labelledby="limits-heading">
-      <h2 id="limits-heading">What this experiment teaches</h2>
-      <p>An arbitrage loop returns to the same good at known quotes. Its rate product tests whether the relative prices agree. Directional speculation instead relies on an uncertain future price; this prototype has no future price changes.</p>
-      <p>Real markets can have fees, limited liquidity, execution risk, and prices that respond to orders. Those effects are excluded here. “Corrected rates” demonstrates consistent prices but does not simulate a process of price convergence. This prototype’s numerical balance limit is one billion grain.</p>
-    </section>
-  </main>
-  <footer>
-    <p>Economic concepts: David Friedman. Development: Eric McKee.</p>
-    <p>Paul and Virginia Engler College of Business · West Texas A&amp;M University</p>
-  </footer>
-  <script src="js/model.js"></script>
-  <script src="js/view.js"></script>
-  <script src="js/app.js"></script>
+    <aside class="card market-card" aria-labelledby="market-heading"><p class="eyebrow">02 · Read the market</p><h2 id="market-heading">Exchange quotes</h2>
+      <label for="scenario">Scenario</label><select id="scenario" aria-describedby="scenario-reset"><option value="opportunity">Arbitrage opportunity</option><option value="consistent">Consistent rates</option><option value="corrected">Corrected rates</option></select><p id="scenario-reset" class="help">Changing scenario restarts holdings and clears trade history.</p><button id="restart" type="button">Restart this scenario</button>
+      <p id="scenario-explanation"></p><p id="matrix-note" class="help">Read from a <strong>row</strong> to a <strong>column</strong>: units received for one unit surrendered. Highlighted cells follow your route; their labels also identify them.</p>
+      <div class="table-scroll matrix-scroll" role="region" aria-label="Exchange-rate matrix; scroll horizontally" tabindex="0"><table id="quote-matrix" aria-describedby="matrix-note"><caption>Give ↓ · Receive →</caption><thead></thead><tbody></tbody></table></div>
+      <details><summary>Read all ten quote pairs</summary><p id="quote-note" class="help">Displayed quotes are rounded; calculations use full precision. Reverse quotes are reciprocals.</p><div class="table-scroll" role="region" aria-label="Ten exchange-rate pairs; scroll horizontally for both directions" tabindex="0"><table id="quotes-table" aria-describedby="quote-note"><caption>Ten pairs, both directions</caption><thead><tr><th scope="col">Pair</th><th scope="col">First → second</th><th scope="col">Second → first</th></tr></thead><tbody></tbody></table></div></details>
+      <div class="market-assumptions"><h3>One action, locked quotes</h3><p>Intermediate goods can be traded again immediately. Unlimited liquidity means a profitable loop can be repeated here. No future price prediction is involved.</p></div>
+    </aside>
+  </div>
+  <section class="card discovery-card" aria-labelledby="discovery-heading"><div><p class="eyebrow">03 · Investigate</p><h2 id="discovery-heading">Is your loop the best one?</h2><p>Try your own route first. Then compare it with the complete set of 64 possible loops.</p></div><div class="actions"><button id="reveal" type="button">Reveal best loop</button><button id="explore-routes" type="button">Explore all 64 routes</button></div>
+    <section id="reveal-panel" class="reveal" aria-labelledby="reveal-heading" hidden><h3 id="reveal-heading">Best-loop explanation</h3><p id="reveal-summary"></p><ol id="reveal-legs"></ol></section>
+    <section id="explorer-panel" aria-labelledby="explorer-heading" hidden><h3 id="explorer-heading">The complete opportunity set</h3><p id="explorer-summary"></p><label for="route-filter">Show routes</label><select id="route-filter"><option value="all">All routes</option><option value="Profitable">Profitable</option><option value="Neutral">Neutral</option><option value="Losing">Losing</option></select><p class="help">Returns below use a hypothetical 100 grain. Loading a route changes only your plan; preview before executing.</p><div class="table-scroll" role="region" tabindex="0" aria-label="All matching routes; scroll horizontally"><table id="explorer-table"><caption>Routes ordered by outcome, then fewer stops, then goods order</caption><thead><tr><th scope="col">Route</th><th scope="col">Outcome</th><th scope="col">Multiplier</th><th scope="col">Return on 100 grain</th><th scope="col">Action</th></tr></thead><tbody></tbody></table></div><p id="explorer-empty" hidden>No routes match this filter at these quotes.</p></section>
+  </section>
+  <section class="card lesson-card" aria-labelledby="prompts-heading"><p class="eyebrow">04 · Explain it</p><h2 id="prompts-heading" tabindex="-1">Guided self-checks</h2><p>Each exercise loads a scenario, route, and exactly 100 grain. It restarts holdings and clears history. Preview beside the question, then explain what happened.</p><div id="prompt-buttons" class="actions"></div>
+    <div id="prompt-panel" hidden><h3 id="prompt-title"></h3><button id="preview-prompt" type="button">Preview self-check loop</button><p id="prompt-preview-summary">Preview the loaded loop to see the evidence for your answer.</p><fieldset><legend id="prompt-question"></legend><div id="prompt-options"></div></fieldset><button id="check-prompt" class="primary" type="button">Check answer</button><p id="prompt-result"></p></div>
+  </section>
+  <section class="card" aria-labelledby="history-heading"><div class="section-top"><div><p class="eyebrow">Your evidence</p><h2 id="history-heading">Executed loops</h2></div><button id="download-history" type="button" disabled>Download trade history (CSV)</button></div><p id="history-summary">No loops executed. Quotes stay fixed after every trade.</p><div id="history-scroll" class="table-scroll" role="region" aria-label="Executed-loop history; scroll horizontally" tabindex="0" hidden><table id="history-table"><caption>Executed loops · amounts measured in grain</caption><thead><tr><th scope="col">Loop</th><th scope="col">Route</th><th scope="col">Exchanged</th><th scope="col">Multiplier</th><th scope="col">Returned</th><th scope="col">Profit / loss</th><th scope="col">Balance after</th></tr></thead><tbody></tbody></table></div><p class="help">History stays in this tab until you restart, switch scenarios, load a self-check, or reload the page. Download it first if you want to keep it.</p></section>
+  <section class="model-notes" aria-labelledby="limits-heading"><h2 id="limits-heading" tabindex="-1">What this experiment teaches</h2><div class="notes-grid"><div><h3>Arbitrage, not a forecast</h3><p>A closed loop returns to the same good at known quotes. Its rate product tests whether relative prices agree. Directional speculation relies on an uncertain future price; this lab has no future price changes.</p></div><div><h3>A deliberately simple market</h3><p>Real markets can have fees, limited liquidity, execution risk, and prices that respond to orders. Those effects are excluded. Corrected quotes demonstrate consistency, not a process of convergence. The numerical balance limit is one billion grain.</p></div></div>
+    <details><summary>Educator notes and source material</summary><p>Proposed teaching interface for review. The accessibility release audit and classroom evaluation remain pending. Code is MIT-licensed; institutional branding is excluded from that license and does not imply endorsement of derivative works.</p><ul class="resources"><li><a href="README.md">Project overview</a></li><li><a href="SPECIFICATION.md">Browser specification</a></li><li><a href="DESIGN.md">Original design brief</a></li><li><a href="REVIEW.md">Review and verification</a></li><li><a href="http://daviddfriedman.com/Living_Paper/Program_Descriptions/program_descriptions.htm">David Friedman’s original program descriptions</a></li></ul></details>
+  </section>
+</main>
+<footer><p>Economic concepts: David Friedman. Development: Eric McKee.</p><p>Paul and Virginia Engler College of Business · West Texas A&amp;M University</p></footer>
+<script src="js/model.js"></script><script src="js/view.js"></script><script src="js/app.js"></script>
 </body>
 </html>

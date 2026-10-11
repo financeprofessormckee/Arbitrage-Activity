@@ -32,3 +32,31 @@ Native controls support the complete keyboard/single-pointer workflow. Preserve 
 Independently check all products/reciprocals/64 routes, 20% gain, reverse loss, corrected neutrality, partial/repeated trading and histories, best-loop ties, invalid inputs/underflow/numerical limits, immutability, resets, and all prompts. Browser checks cover keyboard workflows, preview invalidation, associated errors/focus, route editing/reveal/history/prompts, file/HTTP agreement, desktop/mobile screenshots, all seven pages at 1280/640/375/320px, links/assets/Parsing, contrast, and handoff limits. Evidence and limitations belong in VERIFICATION.md (in the authoring collection).
 
 Commit/push privately and freeze verified v1 for David's review. Existing five activities remain frozen. Before teaching release, incorporate review and complete WCAG 2.2/2.1 AA audit including Parsing, ACCESSIBILITY.md, and Accessibility Conformance Report.docx; screen-reader/classroom evaluation and release terms remain pending. No public publishing, deployment, outreach, or license selection in this task.
+
+## Proposed trading-lab revision · 2026-10-11
+
+The original model above is retained. Additions are teaching-interface adaptations:
+
+- Self-check previews require exactly 100 grain and matching trade-history length;
+  missing answers have specific feedback. Local previews remain synchronized with
+  the trade preview and are cleared by edits. Free trading remains unrestricted
+  within the original numerical limits.
+- Reverse route changes the selected stops only and requires a fresh preview.
+- A directional matrix and route quote labels supplement the original table.
+  Return cards and a rounded rate-product expression supplement the full conversion
+  table. A neutral percentage is displayed as approximately zero under the existing
+  multiplier tolerance.
+- After a valid preview, an optional comparison uses the same route, amount, and
+  current opening balance with each scenario's quotes and the current market's
+  reversed route. It never mutates state. Numerical-limit failures are explicit.
+- The optional route explorer enumerates all 64 loops, shows their outcome counts,
+  and filters by classification. Within each outcome, shorter routes precede the
+  goods-order tie break. Return figures use a clearly labeled hypothetical 100 grain.
+  Loading a route changes the plan, invalidates evidence, and focuses Preview; it
+  does not exchange grain. Input/scenario changes hide outdated analysis panels.
+- Trade-history CSV is a user-initiated local download, with scenario, route, loop
+  number, amount, multiplier, return, profit, and before/after balances. Values retain
+  full calculation precision. There is still no persistence or network service.
+
+These are proposals for review. Historical freeze/release statements above describe
+v1 and do not certify this alternative for release. See REVIEW.md for known limits.

@@ -111,4 +111,33 @@ for (const info of M.prompts) {
 const q = M.quotes('opportunity'); q[0][3] = 999; close(M.quotes('opportunity')[0][3], .24, 'Quote copy');
 const task = M.prompt('gain'); task.route[0] = 4; task.options[0][0] = 'changed'; equal(M.prompt('gain').route, [3, 2], 'Prompt route copy');
 equal(M.prompt('gain').options[0][0], 'future', 'Prompt answer copy');
+// Self-check evidence must match both the amount and the trade history.
+for (const info of M.prompts) {
+  const task = M.prompt(info.id), state = M.start(task.scenario);
+  for (const amount of [1, 50, 99.99]) {
+    const wrongAmount = M.preview(state, task.route, amount);
+    ok(!M.checkPrompt(info.id, state, wrongAmount, task.answer).complete, 'Self-check rejects a different amount');
+  }
+  const evidence = M.preview(state, task.route, 100);
+  const afterNeutralTrade = M.execute(state, [1], 100).state;
+  equal(afterNeutralTrade.balance, state.balance, 'Neutral trade retains the same balance');
+  ok(!M.checkPrompt(info.id, afterNeutralTrade, evidence, task.answer).complete, 'Neutral trade invalidates earlier evidence');
+  ok(M.checkPrompt(info.id, afterNeutralTrade, M.preview(afterNeutralTrade, task.route, 100), task.answer).complete, 'Fresh evidence passes');
+  equal(M.checkPrompt(info.id, state, evidence, '').message, 'Choose an answer before checking it.', 'Missing answer has actionable feedback');
+}
+// Export the actual executed ledger, with full numeric precision and stable columns.
+let exportState = M.start();
+exportState = M.execute(exportState, [3, 2], 40).state;
+exportState = M.execute(exportState, [2, 3], 20).state;
+const exportBefore = snapshot(exportState);
+const csv = M.historyCSV(exportState);
+const csvRows = csv.trim().split('\r\n').map(line => line.slice(1, -1).split('","'));
+equal(csvRows.length, 3, 'CSV includes header and both executed trades');
+equal(csvRows[0].length, 9, 'CSV has nine explicit columns');
+equal(csvRows[1], ['opportunity', '1', 'Grain -> Tea -> Copper -> Grain', '40', '1.2', '48', '8', '100', '108'], 'CSV matches independent partial-trade ledger');
+equal(csvRows[2][5], String(exportState.history[1].returned), 'CSV retains full return precision');
+equal(csvRows[2][8], String(exportState.balance), 'CSV final balance agrees with history');
+equal(snapshot(exportState), exportBefore, 'Export does not mutate state');
+equal(M.historyCSV(M.start()).trim().split('\r\n').length, 1, 'Empty ledger exports only header');
+checks++; assert.throws(() => M.historyCSV(null), RangeError);
 console.log(JSON.stringify({ checks, failures: 0, routes: 64, scenarios: 3 }, null, 2));

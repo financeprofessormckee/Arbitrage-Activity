@@ -24,6 +24,8 @@
   function clearSuccess() { el('prompt-result').textContent = ''; el('prompt-result').className = ''; }
   function invalidate(message) {
     currentPreview = null; el('execute').disabled = true; V.preview(null);
+    el('compare-scenarios').disabled = true; el('comparison-panel').hidden = true; el('explorer-panel').hidden = true;
+    el('prompt-preview-summary').textContent = 'Preview the loaded loop to see the evidence for your answer.';
     el('reveal-panel').hidden = true; clearErrors(); clearSuccess();
     if (message) announce(message);
   }
@@ -32,7 +34,7 @@
       Array.from(select.options).forEach(function (option) { option.disabled = route.indexOf(Number(option.value)) !== -1 && Number(option.value) !== route[i]; });
     });
     el('add-stop').disabled = route.length === 4; el('remove-stop').disabled = route.length === 1;
-    V.diagram(route);
+    V.diagram(route, state.scenario); V.matrix(state, route);
   }
   function buildRoute() {
     var container = el('route-selectors'); container.replaceChildren();
@@ -46,7 +48,12 @@
     });
     refreshOptions();
   }
-  function clearPrompt() { activePrompt = null; el('prompt-panel').hidden = true; clearSuccess(); }
+  function markPrompt() {
+    el('prompt-buttons').querySelectorAll('button').forEach(function (button) {
+      button.setAttribute('aria-pressed', String(button.id === 'prompt-' + activePrompt));
+    });
+  }
+  function clearPrompt() { activePrompt = null; el('prompt-panel').hidden = true; clearSuccess(); markPrompt(); }
   function restart(id, keepPrompt) {
     state = M.start(id); route = [3, 2]; el('scenario').value = id; el('amount').value = '100';
     invalidate(); if (!keepPrompt) clearPrompt(); buildRoute(); V.quotes(state); V.summary(state); V.history(state);
@@ -64,15 +71,23 @@
     if (route.length <= 1) return;
     route.pop(); invalidate('Last stop removed. Preview the new route.'); buildRoute(); el('stop-' + route.length).focus();
   });
+  el('reverse-route').addEventListener('click', function () {
+    route.reverse(); invalidate('Route reversed. Preview it to compare the reciprocal multiplier.'); buildRoute();
+  });
   el('amount').addEventListener('input', function () { invalidate('Amount changed. Preview it again before executing.'); });
   el('all-holdings').addEventListener('click', function () { el('amount').value = String(state.balance); invalidate('Amount set to all ' + V.number(state.balance) + ' grain. Preview before executing.'); });
-  el('trade-form').addEventListener('submit', function (event) {
-    event.preventDefault(); invalidate();
+  function previewLoop() {
+    invalidate();
     var p = M.preview(state, route, el('amount').value);
     if (!p.ok) { showErrors(p.errors); return; }
-    currentPreview = p; V.preview(p); el('execute').disabled = false;
+    currentPreview = p; V.preview(p); el('execute').disabled = false; el('compare-scenarios').disabled = false;
+    el('prompt-preview-summary').textContent = el('preview-summary').textContent;
     announce(p.classification + ' preview. ' + V.number(p.amount) + ' grain would return ' + V.number(p.returned) + ' grain, multiplier ' + V.number(p.multiplier) + '. No trade executed.');
+  }
+  el('trade-form').addEventListener('submit', function (event) {
+    event.preventDefault(); previewLoop();
   });
+  el('preview-prompt').addEventListener('click', previewLoop);
   el('execute').addEventListener('click', function () {
     if (!currentPreview) return;
     // Read current controls and revalidate; never execute a stale or invalid preview.
@@ -93,10 +108,52 @@
     clearErrors(); V.reveal(best, p);
     announce(best.profitable ? 'Best loop revealed: ' + V.routeText(best.route) + ', multiplier ' + V.number(best.multiplier) + '. Your route and holdings are unchanged.' : 'Searched all 64 routes. No profitable loop exists at these quotes.');
   });
+  el('compare-scenarios').addEventListener('click', function () {
+    if (!currentPreview) return;
+    V.comparison(state, route, currentPreview.amount);
+    announce('Compared the same route and amount across all three scenarios and the reverse direction. No trade executed; your market and holdings are unchanged.');
+  });
+  function renderExplorer() {
+    var filter = el('route-filter').value, counts = {Profitable:0, Neutral:0, Losing:0};
+    var ranking = {Profitable:0, Neutral:1, Losing:2};
+    var loops = M.enumerate(state.scenario).sort(function (a, b) {
+      var difference = ranking[a.classification] - ranking[b.classification] || a.route.length - b.route.length;
+      if (difference) return difference;
+      for (var i = 0; i < a.route.length; i++) if (a.route[i] !== b.route[i]) return a.route[i] - b.route[i];
+      return 0;
+    });
+    loops.forEach(function (loop) { counts[loop.classification]++; });
+    var filtered = loops.filter(function (loop) { return filter === 'all' || loop.classification === filter; });
+    el('explorer-summary').textContent = M.scenario(state.scenario).title + ': ' + counts.Profitable + ' profitable, ' + counts.Neutral + ' neutral, ' + counts.Losing + ' losing. Showing ' + filtered.length + ' of 64 routes.';
+    var body = el('explorer-table').tBodies[0]; body.replaceChildren();
+    filtered.forEach(function (loop) {
+      var tr = V.node('tr'), heading = V.node('th', V.routeText(loop.route)); heading.scope = 'row'; tr.appendChild(heading);
+      [loop.classification, V.number(loop.multiplier) + '×', V.number(100 * loop.multiplier)].forEach(function (value) { tr.appendChild(V.node('td', value)); });
+      var cell = V.node('td'), button = V.node('button', 'Use route'); button.type = 'button'; button.setAttribute('aria-label', 'Use ' + V.routeText(loop.route));
+      button.addEventListener('click', function () {
+        route = loop.route.slice(); invalidate('Route loaded from the explorer. Preview it before executing. Holdings and history are unchanged.'); buildRoute(); el('preview').focus();
+      });
+      cell.appendChild(button); tr.appendChild(cell); body.appendChild(tr);
+    });
+    el('explorer-empty').hidden = filtered.length !== 0; el('explorer-panel').hidden = false;
+  }
+  el('explore-routes').addEventListener('click', function () {
+    el('route-filter').value = 'all'; renderExplorer(); announce(el('explorer-summary').textContent + ' No trade executed.');
+  });
+  el('route-filter').addEventListener('change', function () { renderExplorer(); announce(el('explorer-summary').textContent); });
+  el('download-history').addEventListener('click', function () {
+    if (!state.history.length) return;
+    var blob = new Blob([M.historyCSV(state)], {type:'text/csv;charset=utf-8'}), url = URL.createObjectURL(blob);
+    var link = V.node('a'); link.href = url; link.download = 'arbitrage-' + state.scenario + '-history.csv';
+    document.body.appendChild(link); link.click(); link.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    announce('Trade history downloaded as CSV. Values retain calculation precision.');
+  });
   M.prompts.forEach(function (info) {
     var button = V.node('button', info.title); button.type = 'button'; button.id = 'prompt-' + info.id;
+    button.setAttribute('aria-pressed', 'false');
     button.addEventListener('click', function () {
-      var task = M.prompt(info.id); restart(task.scenario, true); activePrompt = task.id;
+      var task = M.prompt(info.id); restart(task.scenario, true); activePrompt = task.id; markPrompt();
       route = task.route.slice(); buildRoute(); el('prompt-panel').hidden = false;
       el('prompt-title').textContent = task.title; el('prompt-question').textContent = task.question;
       var options = el('prompt-options'); options.replaceChildren();
