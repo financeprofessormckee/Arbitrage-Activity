@@ -24,6 +24,7 @@
   function clearSuccess() { el('prompt-result').textContent = ''; el('prompt-result').className = ''; }
   function invalidate(message) {
     currentPreview = null; el('execute').disabled = true; V.preview(null);
+    el('prompt-preview-summary').textContent = 'Preview the loaded loop to see the evidence for your answer.';
     el('reveal-panel').hidden = true; clearErrors(); clearSuccess();
     if (message) announce(message);
   }
@@ -46,7 +47,12 @@
     });
     refreshOptions();
   }
-  function clearPrompt() { activePrompt = null; el('prompt-panel').hidden = true; clearSuccess(); }
+  function markPrompt() {
+    el('prompt-buttons').querySelectorAll('button').forEach(function (button) {
+      button.setAttribute('aria-pressed', String(button.id === 'prompt-' + activePrompt));
+    });
+  }
+  function clearPrompt() { activePrompt = null; el('prompt-panel').hidden = true; clearSuccess(); markPrompt(); }
   function restart(id, keepPrompt) {
     state = M.start(id); route = [3, 2]; el('scenario').value = id; el('amount').value = '100';
     invalidate(); if (!keepPrompt) clearPrompt(); buildRoute(); V.quotes(state); V.summary(state); V.history(state);
@@ -64,15 +70,23 @@
     if (route.length <= 1) return;
     route.pop(); invalidate('Last stop removed. Preview the new route.'); buildRoute(); el('stop-' + route.length).focus();
   });
+  el('reverse-route').addEventListener('click', function () {
+    route.reverse(); invalidate('Route reversed. Preview it to compare the reciprocal multiplier.'); buildRoute();
+  });
   el('amount').addEventListener('input', function () { invalidate('Amount changed. Preview it again before executing.'); });
   el('all-holdings').addEventListener('click', function () { el('amount').value = String(state.balance); invalidate('Amount set to all ' + V.number(state.balance) + ' grain. Preview before executing.'); });
-  el('trade-form').addEventListener('submit', function (event) {
-    event.preventDefault(); invalidate();
+  function previewLoop() {
+    invalidate();
     var p = M.preview(state, route, el('amount').value);
     if (!p.ok) { showErrors(p.errors); return; }
     currentPreview = p; V.preview(p); el('execute').disabled = false;
+    el('prompt-preview-summary').textContent = el('preview-summary').textContent;
     announce(p.classification + ' preview. ' + V.number(p.amount) + ' grain would return ' + V.number(p.returned) + ' grain, multiplier ' + V.number(p.multiplier) + '. No trade executed.');
+  }
+  el('trade-form').addEventListener('submit', function (event) {
+    event.preventDefault(); previewLoop();
   });
+  el('preview-prompt').addEventListener('click', previewLoop);
   el('execute').addEventListener('click', function () {
     if (!currentPreview) return;
     // Read current controls and revalidate; never execute a stale or invalid preview.
@@ -95,8 +109,9 @@
   });
   M.prompts.forEach(function (info) {
     var button = V.node('button', info.title); button.type = 'button'; button.id = 'prompt-' + info.id;
+    button.setAttribute('aria-pressed', 'false');
     button.addEventListener('click', function () {
-      var task = M.prompt(info.id); restart(task.scenario, true); activePrompt = task.id;
+      var task = M.prompt(info.id); restart(task.scenario, true); activePrompt = task.id; markPrompt();
       route = task.route.slice(); buildRoute(); el('prompt-panel').hidden = false;
       el('prompt-title').textContent = task.title; el('prompt-question').textContent = task.question;
       var options = el('prompt-options'); options.replaceChildren();

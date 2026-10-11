@@ -98,7 +98,8 @@
     var returned = amount * product;
     return { ok: true, scenario: s.scenario, route: route.slice(), path: path, amount: amount,
       multiplier: product, classification: classification(product), legs: legs, returned: returned,
-      profit: returned - amount, before: s.balance, after: s.balance - amount + returned };
+      profit: returned - amount, before: s.balance, after: s.balance - amount + returned,
+      historyLength: s.history.length };
   }
   function execute(s, route, amount) {
     var p = preview(s, route, amount);
@@ -136,10 +137,12 @@
   }
   function checkPrompt(id, s, p, answer) {
     var task = prompt(id);
-    if (!p || !p.ok || p.scenario !== s.scenario || p.before !== s.balance ||
+    if (!p || !p.ok || p.scenario !== s.scenario || p.before !== s.balance || p.historyLength !== s.history.length ||
       s.scenario !== task.scenario || JSON.stringify(p.route) !== JSON.stringify(task.route)) return { complete: false, message: 'Preview the self-check’s loaded route in its scenario before checking your answer.' };
+    if (p.amount !== 100) return { complete: false, message: 'This self-check uses exactly 100 grain. Reload the self-check, then preview its loop before answering.' };
     var actual = preview(s, p.route, p.amount);
     if (!actual.ok || Math.abs(actual.multiplier - task.multiplier) > EPS) return { complete: false, message: 'Preview the self-check’s loaded route before checking your answer.' };
+    if (!answer) return { complete: false, message: 'Choose an answer before checking it.' };
     if (answer !== task.answer) return { complete: false, message: 'Not yet. Compare the rate product with one, then try your answer again.' };
     return { complete: true, message: 'Self-check complete. ' + task.explanation };
   }

@@ -32,3 +32,12 @@ Native controls support the complete keyboard/single-pointer workflow. Preserve 
 Independently check all products/reciprocals/64 routes, 20% gain, reverse loss, corrected neutrality, partial/repeated trading and histories, best-loop ties, invalid inputs/underflow/numerical limits, immutability, resets, and all prompts. Browser checks cover keyboard workflows, preview invalidation, associated errors/focus, route editing/reveal/history/prompts, file/HTTP agreement, desktop/mobile screenshots, all seven pages at 1280/640/375/320px, links/assets/Parsing, contrast, and handoff limits. Evidence and limitations belong in VERIFICATION.md (in the authoring collection).
 
 Commit/push privately and freeze verified v1 for David's review. Existing five activities remain frozen. Before teaching release, incorporate review and complete WCAG 2.2/2.1 AA audit including Parsing, ACCESSIBILITY.md, and Accessibility Conformance Report.docx; screen-reader/classroom evaluation and release terms remain pending. No public publishing, deployment, outreach, or license selection in this task.
+
+## Proposed conservative revision · 2026-10-11
+
+Self-check evidence must use exactly 100 grain and match the current history
+length as well as scenario, route, and opening balance. Free exploration still
+accepts any valid positive amount. Self-checks can be previewed beside the question;
+all input changes invalidate that evidence. A reverse-route shortcut reverses only
+the selected intermediate goods and requires a fresh preview. These are proposed
+review changes; the original freeze and release statements above describe v1.

@@ -111,4 +111,18 @@ for (const info of M.prompts) {
 const q = M.quotes('opportunity'); q[0][3] = 999; close(M.quotes('opportunity')[0][3], .24, 'Quote copy');
 const task = M.prompt('gain'); task.route[0] = 4; task.options[0][0] = 'changed'; equal(M.prompt('gain').route, [3, 2], 'Prompt route copy');
 equal(M.prompt('gain').options[0][0], 'future', 'Prompt answer copy');
+// Self-check evidence must match both the amount and the trade history.
+for (const info of M.prompts) {
+  const task = M.prompt(info.id), state = M.start(task.scenario);
+  for (const amount of [1, 50, 99.99]) {
+    const wrongAmount = M.preview(state, task.route, amount);
+    ok(!M.checkPrompt(info.id, state, wrongAmount, task.answer).complete, 'Self-check rejects a different amount');
+  }
+  const evidence = M.preview(state, task.route, 100);
+  const afterNeutralTrade = M.execute(state, [1], 100).state;
+  equal(afterNeutralTrade.balance, state.balance, 'Neutral trade retains the same balance');
+  ok(!M.checkPrompt(info.id, afterNeutralTrade, evidence, task.answer).complete, 'Neutral trade invalidates earlier evidence');
+  ok(M.checkPrompt(info.id, afterNeutralTrade, M.preview(afterNeutralTrade, task.route, 100), task.answer).complete, 'Fresh evidence passes');
+  equal(M.checkPrompt(info.id, state, evidence, '').message, 'Choose an answer before checking it.', 'Missing answer has actionable feedback');
+}
 console.log(JSON.stringify({ checks, failures: 0, routes: 64, scenarios: 3 }, null, 2));

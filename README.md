@@ -40,3 +40,23 @@ of derivative works. If you use or adapt this activity, please cite this reposit
 ---
 *Economic concepts: [David Friedman](http://daviddfriedman.com/Living_Paper/living_paper.htm). Development: [Eric McKee](https://github.com/financeprofessormckee),
 Paul and Virginia Engler College of Business, West Texas A&M University.*
+
+## Proposed review improvements
+
+This branch adds exact-amount self-check validation, a reverse-route shortcut,
+nearby self-check previews, and active-exercise feedback. See [REVIEW.md](REVIEW.md)
+for detailed findings and validation limits. The original economic assumptions remain intact.
+
+Development checks (no application runtime dependencies):
+
+```sh
+node tests/model-tests.cjs
+npm install --no-save jsdom@30.1.2 playwright
+node tests/dom-tests.cjs
+npx playwright install chromium
+node tests/browser-tests.cjs
+```
+
+Set `TEST_URL` to test an HTTP-served copy instead of the default local file,
+`ARTIFACT_DIR` to capture screenshots, or `CHROMIUM_EXECUTABLE` for an installed
+Chromium. DOM checks do not replace browser reflow and screen-reader testing.

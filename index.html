@@ -25,6 +25,7 @@
     <p class="eyebrow">Friedman Economic Games · Proposal 15</p>
     <h1>Arbitrage</h1>
     <p class="intro">Can you return with more grain than you started with? Choose an exchange loop and multiply its quotes to find out.</p>
+    <nav class="activity-nav" aria-label="Activity sections"><a href="#route-heading">Plan a loop</a><a href="#prompts-heading">Try a self-check</a></nav>
     <ul class="resources">
       <li><a href="README.md">Project overview</a></li>
       <li><a href="SPECIFICATION.md">Browser specification</a></li>
@@ -57,12 +58,12 @@
       <div class="metric"><h2>Final / initial holdings</h2><p id="ratio">1×</p></div>
     </section>
     <section class="card" aria-labelledby="route-heading">
-      <h2 id="route-heading">2. Plan a loop</h2>
+      <h2 id="route-heading" tabindex="-1">2. Plan a loop</h2>
       <p id="route-help">Begin and end in grain. Choose one to four distinct intermediate goods; each quote is locked for the whole loop. A product above one gains grain; below one loses grain.</p>
       <form id="trade-form" novalidate>
         <fieldset aria-describedby="route-help route-error"><legend>Intermediate goods, in exchange order</legend>
           <div id="route-selectors" class="route-selectors"></div>
-          <div class="actions"><button id="add-stop" type="button">Add a stop</button><button id="remove-stop" type="button">Remove last stop</button></div>
+          <div class="actions"><button id="add-stop" type="button">Add a stop</button><button id="remove-stop" type="button">Remove last stop</button><button id="reverse-route" type="button">Reverse route</button></div>
           <p id="route-error" class="error" hidden></p>
         </fieldset>
         <div class="controls amount-controls"><div><label for="amount">Grain to exchange</label>
@@ -91,10 +92,12 @@
       </div>
     </section>
     <section class="card" aria-labelledby="prompts-heading">
-      <h2 id="prompts-heading">Optional self-checks</h2>
-      <p>Each self-check loads a scenario and route and restarts your holdings. Preview the loop, choose an answer, then check it. Execution is optional.</p>
+      <h2 id="prompts-heading" tabindex="-1">Optional self-checks</h2>
+      <p>Each self-check loads a scenario, route, and exactly 100 grain and restarts your holdings. Preview the loop here, choose an answer, then check it. Execution is optional.</p>
       <div id="prompt-buttons" class="actions"></div>
       <div id="prompt-panel" hidden><h3 id="prompt-title"></h3>
+        <button id="preview-prompt" type="button">Preview self-check loop</button>
+        <p id="prompt-preview-summary">Preview the loaded loop to see the evidence for your answer.</p>
         <fieldset><legend id="prompt-question"></legend><div id="prompt-options"></div></fieldset>
         <button id="check-prompt" type="button">Check answer</button><p id="prompt-result"></p>
       </div>
